@@ -1,0 +1,646 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create AWS Infrastructure for NFT Application
+
+Parameters:
+  StackName:
+    Type: String
+    Default: 'nft-stack'
+  Stage:
+    Type: String
+  ReadCapacityUnits:
+    Description: Provisioned read throughput
+    Type: Number
+    Default: '5'
+    MinValue: '5'
+    MaxValue: '10000'
+    ConstraintDescription: must be between 5 and 10000
+  WriteCapacityUnits:
+    Description: Provisioned write throughput
+    Type: Number
+    Default: '10'
+    MinValue: '5'
+    MaxValue: '10000'
+    ConstraintDescription: must be between 5 and 10000
+
+Resources:
+  DB1:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties: 
+      TableName: !Join [ '_', [ !Ref 'Stage', 'nft_asset_categoties' ] ]
+      AttributeDefinitions:
+        - AttributeName: category_id
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: category_id
+          KeyType: HASH
+      # ProvisionedThroughput:
+      #   ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+      #   WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      BillingMode: PAY_PER_REQUEST
+  DB2:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties: 
+      TableName: !Join [ '_', [ !Ref 'Stage', 'nft_asset_info' ] ]
+      AttributeDefinitions: 
+        - AttributeName: asset_id
+          AttributeType: 'S'
+        - AttributeName: access_key
+          AttributeType: 'S'
+        - AttributeName: asset_category
+          AttributeType: 'S'
+        - AttributeName: asset_marketplace
+          AttributeType: 'S'
+        - AttributeName: collection_id
+          AttributeType: 'S'
+        - AttributeName: created_time
+          AttributeType: 'S'
+        - AttributeName: file_type
+          AttributeType: 'S'
+        - AttributeName: user_id
+          AttributeType: 'S'
+        - AttributeName: minted_nft_token_id
+          AttributeType: 'S'
+        - AttributeName: minting_transaction_hash
+          AttributeType: 'S'
+        - AttributeName: owner_id
+          AttributeType: 'S'
+        - AttributeName: user_is_owner
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: asset_id
+          KeyType: HASH
+      # ProvisionedThroughput:
+      #   ReadCapacityUnits: !Ref 'WriteCapacityUnits'
+      #   WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+      - IndexName: access_key-index
+        KeySchema:
+        - AttributeName: access_key
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        # ProvisionedThroughput:
+        #   ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        #   WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+        BillingMode: PAY_PER_REQUEST
+      - IndexName: asset_category-index
+        KeySchema:
+        - AttributeName: asset_category
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        # ProvisionedThroughput:
+        #   ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        #   WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+        BillingMode: PAY_PER_REQUEST
+      - IndexName: asset_marketplace-index
+        KeySchema:
+        - AttributeName: asset_marketplace
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        # ProvisionedThroughput:
+        #   ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        #   WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+        BillingMode: PAY_PER_REQUEST
+      - IndexName: collection_id-index
+        KeySchema:
+        - AttributeName: collection_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: created_time-index
+        KeySchema:
+        - AttributeName: created_time
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: file_type-index
+        KeySchema:
+        - AttributeName: file_type
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: user_id-index
+        KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: minted_nft_token_id-index
+        KeySchema:
+        - AttributeName: minted_nft_token_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: minting_transaction_hash-index
+        KeySchema:
+        - AttributeName: minting_transaction_hash
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: owner_id-index
+        KeySchema:
+        - AttributeName: owner_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: user_is_owner-index
+        KeySchema:
+        - AttributeName: user_is_owner
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+  DB3:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties: 
+      TableName: !Join [ '_', [ !Ref 'Stage', 'nft_asset_likes' ] ]
+      AttributeDefinitions: 
+        - AttributeName: ID
+          AttributeType: 'S'
+        - AttributeName: asset_id
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      GlobalSecondaryIndexes:
+      - IndexName: asset_id-index
+        KeySchema:
+        - AttributeName: asset_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+  DB4:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties: 
+      TableName: !Join [ '_', [ !Ref 'Stage', 'nft_asset_user_likes' ] ]
+      AttributeDefinitions: 
+        - AttributeName: ID
+          AttributeType: 'S'
+        - AttributeName: asset_id
+          AttributeType: 'S'
+        - AttributeName: user_id
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      GlobalSecondaryIndexes:
+      - IndexName: asset_id-index
+        KeySchema:
+        - AttributeName: asset_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: user_id-index
+        KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+  DB5:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties: 
+      TableName: !Join [ '_', [ !Ref 'Stage', 'nft_bid_info' ] ]
+      AttributeDefinitions: 
+        - AttributeName: bid_id
+          AttributeType: 'S'
+        - AttributeName: asset_id
+          AttributeType: 'S'
+        - AttributeName: user_id
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: bid_id
+          KeyType: HASH
+        - AttributeName: asset_id
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      GlobalSecondaryIndexes:
+      - IndexName: asset_id-index
+        KeySchema:
+        - AttributeName: asset_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: user_id-index
+        KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+  DB6:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties: 
+      TableName: !Join [ '_', [ !Ref 'Stage', 'nft_collection_table' ] ]
+      AttributeDefinitions: 
+        - AttributeName: collection_id
+          AttributeType: 'S'
+        - AttributeName: collection_name
+          AttributeType: 'S'
+        - AttributeName: user_id
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: collection_id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      GlobalSecondaryIndexes:
+      - IndexName: collection_name-index
+        KeySchema:
+        - AttributeName: collection_name
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: user_id-index
+        KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+  DB7:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties: 
+      TableName: !Join [ '_', [ !Ref 'Stage', 'nft_notification' ] ]
+      AttributeDefinitions: 
+        - AttributeName: ID
+          AttributeType: 'S'
+        - AttributeName: user_id
+          AttributeType: 'S'
+        - AttributeName: read_flag
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      GlobalSecondaryIndexes:
+      - IndexName: user_id-index
+        KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: read_flag-index
+        KeySchema:
+        - AttributeName: read_flag
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+  DB8:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties: 
+      TableName: !Join [ '_', [ !Ref 'Stage', 'nft_session_ids' ] ]
+      AttributeDefinitions: 
+        - AttributeName: ID
+          AttributeType: 'S'
+        - AttributeName: session_id
+          AttributeType: 'S'
+        - AttributeName: user_id
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      GlobalSecondaryIndexes:
+      - IndexName: session_id-index
+        KeySchema:
+        - AttributeName: session_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: user_id-index
+        KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+  DB9:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties: 
+      TableName: !Join [ '_', [ !Ref 'Stage', 'nft_user_info' ] ]
+      AttributeDefinitions: 
+        - AttributeName: user_id
+          AttributeType: 'S'
+        - AttributeName: user_email
+          AttributeType: 'S'
+        - AttributeName: user_wallet
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      GlobalSecondaryIndexes:
+      - IndexName: user_email-index
+        KeySchema:
+        - AttributeName: user_email
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: user_wallet-index
+        KeySchema:
+        - AttributeName: user_wallet
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+  DB10:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties: 
+      TableName: !Join [ '_', [ !Ref 'Stage', 'nft_transaction' ] ]
+      AttributeDefinitions: 
+        - AttributeName: ID
+          AttributeType: 'S'
+        - AttributeName: transaction_id
+          AttributeType: 'S'
+        - AttributeName: transaction_hash
+          AttributeType: 'S'
+        - AttributeName: transaction_type
+          AttributeType: 'S'
+        - AttributeName: transaction_block_number
+          AttributeType: 'S'
+        - AttributeName: transaction_value
+          AttributeType: 'S'
+        - AttributeName: transaction_currency
+          AttributeType: 'S'
+        - AttributeName: transaction_blockchain
+          AttributeType: 'S'
+        - AttributeName: transaction_gas_price
+          AttributeType: 'S'
+        - AttributeName: transaction_from_wallet_id
+          AttributeType: 'S'
+        - AttributeName: transaction_from_user_id
+          AttributeType: 'S'
+        - AttributeName: transaction_to_wallet_id
+          AttributeType: 'S'
+        - AttributeName: transaction_to_user_id
+          AttributeType: 'S'
+        - AttributeName: transaction_timestamp
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+        WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      GlobalSecondaryIndexes:
+      - IndexName: transaction_id-index
+        KeySchema:
+        - AttributeName: transaction_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_hash-index
+        KeySchema:
+        - AttributeName: transaction_hash
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_type-index
+        KeySchema:
+        - AttributeName: transaction_type
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_block_number-index
+        KeySchema:
+        - AttributeName: transaction_block_number
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_value-index
+        KeySchema:
+        - AttributeName: transaction_value
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_currency-index
+        KeySchema:
+        - AttributeName: transaction_currency
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_blockchain-index
+        KeySchema:
+        - AttributeName: transaction_blockchain
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_gas_price-index
+        KeySchema:
+        - AttributeName: transaction_gas_price
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_from_wallet_id-index
+        KeySchema:
+        - AttributeName: transaction_from_wallet_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_from_user_id-index
+        KeySchema:
+        - AttributeName: transaction_from_user_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_to_wallet_id-index
+        KeySchema:
+        - AttributeName: transaction_to_wallet_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_to_user_id-index
+        KeySchema:
+        - AttributeName: transaction_to_user_id
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+      - IndexName: transaction_timestamp-index
+        KeySchema:
+        - AttributeName: transaction_timestamp
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: !Ref 'ReadCapacityUnits'
+          WriteCapacityUnits: !Ref 'WriteCapacityUnits'
+  S3Bucket1:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      BucketName: !Join [ '-', [ !Ref 'Stage', 'metabild', 'nft' ] ]
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+              - DELETE
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - Date
+            Id: !Join [ '-', [ !Ref 'Stage', 'nft', 'metabild', 'CORSPolicy' ] ]
+            MaxAge: 3600
+    DeletionPolicy: Retain
+  BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      PolicyDocument:
+        Id: !Join [ '-', [ !Ref 'Stage', 'nft', 'metabild', 'S3Policy' ] ]
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:*'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref S3Bucket1
+                - /*
+      Bucket: !Ref S3Bucket1
+Outputs:
+  WebsiteURL:
+    Value: !GetAtt 
+      - S3Bucket1
+      - WebsiteURL
+    Description: URL for website hosted on S3
+  S3BucketSecureURL:
+    Value: !Join 
+      - ''
+      - - 'https://'
+        - !GetAtt 
+          - S3Bucket1
+          - DomainName
+    Description: Name of S3 bucket to hold website content
+  S3Bucket:
+    Value: !Ref S3Bucket1
+    Description: Details of S3 Bucket 1
